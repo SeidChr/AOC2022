@@ -149,7 +149,7 @@ dotnet_style_coalesce_expression = true:warning
 dotnet_style_null_propagation = true:warning
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
 # File header preferences
-# file_header_template = <copyright file="{fileName}" company="PROJECT-AUTHOR">\n© PROJECT-AUTHOR\n</copyright>
+# file_header_template = <copyright file="{fileName}" company="PROJECT-AUTHOR">\nï¿½ PROJECT-AUTHOR\n</copyright>
 # If you use StyleCop, you'll need to disable SA1636: File header copyright text should match.
 # dotnet_diagnostic.SA1636.severity = none
 # Undocumented
@@ -622,3 +622,9 @@ dotnet_diagnostic.SA1611.severity=none
 dotnet_diagnostic.SA1615.severity=none
 dotnet_diagnostic.SA1617.severity=none
 dotnet_diagnostic.SA1618.severity=none
+
+# i dont care for now + false positives.
+dotnet_diagnostic.CS8509.severity=none
+dotnet_diagnostic.IDE0072.severity=none
+dotnet_diagnostic.CA1050.severity=none
+dotnet_diagnostic.CA1852.severity=none
