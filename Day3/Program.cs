@@ -1,8 +1,8 @@
 ﻿var filename = "input.txt";
+var lineCache = new string[3];
 
 var watch = new System.Diagnostics.Stopwatch();
 
-var lineCache = new string[3];
 watch.Start();
 
 var result = File
@@ -16,11 +16,18 @@ var result = File
 
         if (cacheIndex == 2)
         {
-            second = GetPriority(lineCache[0].Intersect(lineCache[1]).Intersect(lineCache[2]).First());
+            second = GetPriority(
+                lineCache[0]
+                .Intersect(lineCache[1])
+                .Intersect(lineCache[2])
+                .First());
         }
 
         var len = line.Length / 2;
-        var first = GetPriority(line.Take(len).Intersect(line.Skip(len)).First());
+        var first = GetPriority(
+            line.Take(len)
+            .Intersect(line.Skip(len))
+            .First());
 
         return (first, second);
     })
