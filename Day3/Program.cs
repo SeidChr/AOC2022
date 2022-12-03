@@ -2,7 +2,7 @@
 
 var watch = new System.Diagnostics.Stopwatch();
 
-string[] lineCache = new string[3];
+var lineCache = new string[3];
 watch.Start();
 
 var result = File
