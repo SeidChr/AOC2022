@@ -1,14 +1,9 @@
-﻿var filename = "input.txt";
+﻿using Shared;
+var filename = "input.txt";
 var lineCache = new string[3];
 
-var watch = new System.Diagnostics.Stopwatch();
-
-watch.Start();
-
-var result = File
-    .ReadLinesAsync(filename)
-    .ToBlockingEnumerable()
-    .Select((line, index) =>
+filename
+    .WriteSum((line, index) =>
     {
         var second = 0;
         var cacheIndex = index % 3;
@@ -30,12 +25,6 @@ var result = File
             .First());
 
         return (first, second);
-    })
-    .Aggregate((x, y) => (x.first += y.first, x.second += y.second));
-;
-
-watch.Stop();
-
-Console.WriteLine($"1: {result.first} 2: {result.second} in {watch.ElapsedMilliseconds}ms");
+    });
 
 static int GetPriority(int asciiLetter) => asciiLetter - (asciiLetter > 96 ? 96 : 38);

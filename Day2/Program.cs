@@ -1,24 +1,23 @@
-﻿var filename = "input.txt";
+﻿using Shared;
+var filename = "input.txt";
+var map = new Dictionary<Move, ValueTuple<Move, Move>>
+{
+    [Move.Rock] = (Move.Paper, Move.Scissors),
+    [Move.Paper] = (Move.Scissors, Move.Rock),
+    [Move.Scissors] = (Move.Rock, Move.Paper),
+};
 
-var watch = new System.Diagnostics.Stopwatch();
-
-watch.Start();
-
-var result = File
-    .ReadLinesAsync(filename)
-    .ToBlockingEnumerable()
-    .Select(line =>
+filename
+    .WriteSum((line, _) =>
     {
         var opponent = GetOpponentMove(line);
         var control = GetMyselfChar(line);
-        var riggedMyself = GetRiggedMyselfMove(control, opponent);
+        // var riggedMyself = GetRiggedMyselfMove(control, opponent);
+        // var riggedMyself = MGetRiggedMyselfMove(control, opponent);
+        var riggedMyself = FGetRiggedMyselfMove(control, opponent);
+
         return (GetScore(GetMyselfMove(control), opponent), GetScore(riggedMyself, opponent));
-    })
-    .Aggregate((x, y) => (x.Item1 += y.Item1, x.Item2 += y.Item2));
-
-watch.Stop();
-
-Console.WriteLine($"1: {result.Item1} 2: {result.Item2} in {watch.ElapsedMilliseconds}ms");
+    });
 
 static Move GetRiggedMyselfMove(char control, Move opponent)
     => control switch
@@ -28,22 +27,43 @@ static Move GetRiggedMyselfMove(char control, Move opponent)
         'Z' => WinOver(opponent),
     };
 
+static Move FGetRiggedMyselfMove(char control, Move opponent)
+    => control switch
+    {
+        'X' => (Move)FLooseTo((int)opponent),
+        'Y' => opponent,
+        'Z' => (Move)FWinOver((int)opponent),
+    };
+
+Move MGetRiggedMyselfMove(char control, Move opponent)
+    => control switch
+    {
+        'X' => MLooseTo(opponent),
+        'Y' => opponent,
+        'Z' => MWinOver(opponent),
+    };
+
 static char GetMyselfChar(string line) => line[2];
 static Move GetMyselfMove(char myself) => (Move)(myself - 87);
 static Move GetOpponentMove(string line) => (Move)(line[0] - 64);
-
+Move MWinOver(Move opponent) => map![opponent].Item1;
+Move MLooseTo(Move opponent) => map![opponent].Item2;
+static int FWinOver(int opponent) => (opponent % 3) + 1;
+static int FLooseTo(int opponent) => ((opponent + 1) % 3) + 1;
 static Move WinOver(Move opponent) => opponent switch
 {
-    Move.Rock => Move.Paper,
-    Move.Paper => Move.Scissors,
-    Move.Scissors => Move.Rock,
+    // ( $_ % 3 ) + 1
+    Move.Rock => Move.Paper,     // 1 -> 2
+    Move.Paper => Move.Scissors, // 2 -> 3
+    Move.Scissors => Move.Rock,  // 3 -> 1
 };
 
 static Move LooseTo(Move opponent) => opponent switch
 {
-    Move.Rock => Move.Scissors,
-    Move.Paper => Move.Rock,
-    Move.Scissors => Move.Paper,
+    // (($_ + 1) % 3) + 1
+    Move.Rock => Move.Scissors,  // 1 -> 3
+    Move.Paper => Move.Rock,     // 2 -> 1
+    Move.Scissors => Move.Paper, // 3 -> 2
 };
 
 static int GetScore(Move myself, Move opponent)
@@ -58,7 +78,6 @@ static int GetScore(Move myself, Move opponent)
         (Move.Scissors, Move.Rock) => 0 + 3,
         (Move.Scissors, Move.Scissors) => 3 + 3,
         (Move.Scissors, Move.Paper) => 6 + 3,
-        _ => throw new NotImplementedException(),
     };
 
 public enum Move
