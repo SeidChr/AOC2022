@@ -1,4 +1,4 @@
-﻿using Shared;
+﻿using Common;
 var filename = "input.txt";
 var map = new Dictionary<Move, ValueTuple<Move, Move>>
 {

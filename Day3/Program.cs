@@ -1,4 +1,4 @@
-﻿using Shared;
+﻿using Common;
 var filename = "input.txt";
 var lineCache = new string[3];
 

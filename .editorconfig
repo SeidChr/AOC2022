@@ -623,8 +623,15 @@ dotnet_diagnostic.SA1615.severity=none
 dotnet_diagnostic.SA1617.severity=none
 dotnet_diagnostic.SA1618.severity=none
 
-# i dont care for now + false positives.
+# i dont care for now + false positives for the AOC project.
+
+# not all switch cases are handled -> fine. the input is clean!
 dotnet_diagnostic.CS8509.severity=none
 dotnet_diagnostic.IDE0072.severity=none
+# declare types in namespace ... nah. i want top level statements only if possible!
 dotnet_diagnostic.CA1050.severity=none
+# internal types should be sealed. wants to seal programm class even though its not visible in top-level-statements file
 dotnet_diagnostic.CA1852.severity=none
+
+# CS8321 unused methods. fine for this kind of project.
+dotnet_diagnostic.CS8321.severity = suggestion
