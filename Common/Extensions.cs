@@ -1,7 +1,9 @@
 ﻿namespace Common;
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 public static class Extensions
 {
@@ -21,21 +23,11 @@ public static class Extensions
         Func<string, int, ValueTuple<T1, T2>> process)
         where T1 : INumber<T1>
         where T2 : INumber<T2>
-    {
-        var watch = new System.Diagnostics.Stopwatch();
-
-        watch.Start();
-
-        var result = File
-            .ReadLinesAsync(filename)
-            .ToBlockingEnumerable()
-            .Select(process)
-            .Sum();
-
-        watch.Stop();
-
-        Console.WriteLine($"1: {result.Item1} 2: {result.Item2} in {watch.ElapsedMilliseconds}ms");
-    }
+        => WriteSumBody(
+            filename,
+            process,
+            Sum<T1, T2>,
+            (result, watch) => $"1: {result.Item1} 2: {result.Item2} in {watch.ElapsedMilliseconds}ms");
 
     public static void WriteSum<T1, T2, T3>(
         this string filename,
@@ -43,20 +35,31 @@ public static class Extensions
         where T1 : INumber<T1>
         where T2 : INumber<T2>
         where T3 : INumber<T3>
+        => WriteSumBody(
+            filename,
+            process,
+            Sum<T1, T2, T3>,
+            (result, watch) => $"1: {result.Item1} 2: {result.Item2} 3: {result.Item3} in {watch.ElapsedMilliseconds}ms");
+
+    private static void WriteSumBody<T1>(
+        string filename,
+        Func<string, int, T1> process,
+        Func<IEnumerable<T1>, T1> sum,
+        Func<T1, Stopwatch, string> getOutput)
+        where T1 : ITuple
     {
-        var watch = new System.Diagnostics.Stopwatch();
+        var watch = new Stopwatch();
 
         watch.Start();
 
-        var result = File
+        var result = sum(File
             .ReadLinesAsync(filename)
             .ToBlockingEnumerable()
-            .Select(process)
-            .Sum();
+            .Select(process));
 
         watch.Stop();
 
-        Console.WriteLine($"1: {result.Item1} 2: {result.Item2} 3: {result.Item3} in {watch.ElapsedMilliseconds}ms");
+        Console.WriteLine(getOutput(result, watch));
     }
 
     // https://themuuj.com/blog/2020/08/csharp-collection-deconstructing/
@@ -71,6 +74,19 @@ public static class Extensions
         item2 = Next(enumerator);
     }
 
+    // deconstructs a collection to three values
+    public static void Deconstruct<T>(
+        this IEnumerable<T> collection,
+        [MaybeNull] out T item1,
+        [MaybeNull] out T item2,
+        [MaybeNull] out T item3)
+    {
+        var enumerator = collection.GetEnumerator();
+        item1 = Next(enumerator);
+        item2 = Next(enumerator);
+        item3 = Next(enumerator);
+    }
+
     // deconstructs a collection to four values
     public static void Deconstruct<T>(
         this IEnumerable<T> collection,
@@ -79,7 +95,6 @@ public static class Extensions
         [MaybeNull] out T item3,
         [MaybeNull] out T item4)
     {
-
         var enumerator = collection.GetEnumerator();
         item1 = Next(enumerator);
         item2 = Next(enumerator);
@@ -89,6 +104,8 @@ public static class Extensions
 
     // helper method to advance enumerator and return next value
     [return: MaybeNull]
-    private static T Next<T>(IEnumerator<T> enumerator) =>
-        enumerator.MoveNext() ? enumerator.Current : default;
+    private static T Next<T>(IEnumerator<T> enumerator)
+        => enumerator.MoveNext()
+        ? enumerator.Current
+        : default;
 }
