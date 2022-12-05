@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -17,6 +18,24 @@ public static class Extensions
         where T2 : INumber<T2>
         where T3 : INumber<T3>
         => results.Aggregate((x, y) => (x.Item1 + y.Item1, x.Item2 + y.Item2, x.Item3 + y.Item3));
+
+    public static TimeSpan Process(
+        this string filename,
+        Action<string, int> process)
+    {
+        var watch = new Stopwatch();
+
+        watch.Start();
+
+        File
+            .ReadLinesAsync(filename)
+            .ToBlockingEnumerable()
+            .ForEach(process);
+
+        watch.Stop();
+
+        return watch.Elapsed;
+    }
 
     public static void WriteSum<T1, T2>(
         this string filename,
@@ -108,4 +127,32 @@ public static class Extensions
         => enumerator.MoveNext()
         ? enumerator.Current
         : default;
+
+    public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> process)
+    {
+        foreach (var element in enumerable)
+        {
+            process(element);
+        }
+    }
+
+    public static void ForEach<T1>(this IEnumerable<T1> enumerable, Action<T1, int> process)
+    {
+        var i = 0;
+        foreach (var element in enumerable)
+        {
+            process(element, i++);
+        }
+    }
+
+    public static int ToInvariantInt(this string input)
+        => int.Parse(input, CultureInfo.InvariantCulture);
+
+    public static void Times(this int input, Action action)
+    {
+        for (var i = 0; i < input; i++)
+        {
+            action();
+        }
+    }
 }
