@@ -6,6 +6,7 @@ List<string> stackLines = new();
 var parseStacks = true;
 
 List<Stack<char>> stacks = new();
+Stack<char> tempStack = new();
 
 var elapsed = "input.txt".Process((line, index) =>
 {
@@ -26,20 +27,38 @@ var elapsed = "input.txt".Process((line, index) =>
     }
     else
     {
-        ProcessMove(line);
+        // select ProcessMoveA or ProcessMoveB to solve either first or second task
+        // both work on the same stacks, so do not use them together.
+        ProcessMoveB(line);
     }
 });
 
-Console.WriteLine($"1: {string.Concat(stacks.Select(stack => stack.Peek()))} in {elapsed.TotalMilliseconds}");
+Console.WriteLine($"1: {string.Concat(stacks.Select(stack => stack.Peek()))} in {elapsed.TotalMilliseconds:0}ms");
 
-void ProcessMove(string line)
+(int boxes, int source, int destination) GetDirections(string line)
 {
-    // move 3 from 5 to 7
     var array = line.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
     var boxes = array[1].ToInvariantInt();
     var source = array[3].ToInvariantInt();
     var destination = array[5].ToInvariantInt();
+    return (boxes, source, destination);
+}
+
+void ProcessMoveA(string line)
+{
+    // move 3 from 5 to 7
+    var (boxes, source, destination) = GetDirections(line);
+
     boxes.Times(() => stacks[destination - 1].Push(stacks[source - 1].Pop()));
+}
+
+void ProcessMoveB(string line)
+{
+    // move 3 from 5 to 7
+    var (boxes, source, destination) = GetDirections(line);
+
+    boxes.Times(() => tempStack.Push(stacks[source - 1].Pop()));
+    boxes.Times(() => stacks[destination - 1].Push(tempStack.Pop()));
 }
 
 void ParseStacks()
