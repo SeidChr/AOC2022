@@ -1,7 +1,5 @@
 namespace Day2.Solvers;
 
-using Day2;
-
 public class OrdinarySolver : SolverBase
 {
     public override Move LooseTo(Move opponent) => opponent switch

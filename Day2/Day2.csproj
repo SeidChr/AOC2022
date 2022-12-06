@@ -9,7 +9,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <DefaultNamespace>Day2</DefaultNamespace>
+    <RootNamespace>Day2</RootNamespace>
   </PropertyGroup>
 
 </Project>

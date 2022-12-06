@@ -1,6 +1,5 @@
 ﻿using Common;
 
-using Day2;
 using Day2.Solvers;
 
 var filename = "input.txt";

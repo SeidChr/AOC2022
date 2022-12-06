@@ -1,5 +1,3 @@
-namespace Day2;
-
 public interface ISolver
 {
     char GetMyselfChar(string line);
