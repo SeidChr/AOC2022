@@ -145,8 +145,11 @@ public static class Extensions
         }
     }
 
-    public static int ToInvariantInt(this string input)
+    public static int ToIntI(this string input)
         => int.Parse(input, CultureInfo.InvariantCulture);
+
+    public static bool StartsWithIIC(this string input, string pattern)
+        => input.StartsWith(pattern, StringComparison.InvariantCultureIgnoreCase);
 
     public static void Times(this int input, Action action)
     {
