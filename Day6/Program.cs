@@ -4,7 +4,7 @@ for (var i = 3; i < content.Length; i++)
 {
     if (!foundStartOfPacket && content.Substring(i - 3, 4).Distinct().Count() == 4)
     {
-        Console.WriteLine($"Packet: {i + 1} - {content[i - 3]}{content[i - 2]}{content[i - 1]}{content[i]} ");
+        Console.WriteLine($"Packet: {i + 1} - {content[(i - 3)..(i + 1)]} ");
         foundStartOfPacket = true;
     }
 
