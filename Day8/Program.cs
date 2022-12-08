@@ -4,7 +4,7 @@ int[,] matrice = null!;
 
 var side = 0;
 
-"testinput.txt".Process((line, y) =>
+"input.txt".Process((line, y) =>
 {
     if (y == 0)
     {
@@ -30,9 +30,9 @@ Console.WriteLine($"1: {visibleCount} 2: {maxScenicRating}");
     var maxScenicRating = 0;
     var offside = side - 1;
 
-    for (var x = 1; x < offside; x++)
+    for (var y = 1; y < offside; y++)
     {
-        for (var y = 1; y < offside; y++)
+        for (var x = 1; x < offside; x++)
         {
             if (IsVisibleTop(x, y)
                 || IsVisibleLeft(x, y)
@@ -42,14 +42,17 @@ Console.WriteLine($"1: {visibleCount} 2: {maxScenicRating}");
                 visibleCount++;
             }
 
-            var scenicRating = GetVisibleTreesTop(x, y)
-                * GetVisibleTreesBottom(x, y)
-                * GetVisibleTreesLeft(x, y)
-                * GetVisibleTreesRight(x, y);
+            var top = GetVisibleTreesTop(x, y);
+            var bottom = GetVisibleTreesBottom(x, y);
+            var left = GetVisibleTreesLeft(x, y);
+            var right = GetVisibleTreesRight(x, y);
+
+            var scenicRating = top * bottom * left * right;
+
+            // Console.WriteLine($"[{x}, {y}] = {matrice[x, y]} // t{top} * b{bottom} * l{left} * r{right} = {scenicRating}");
 
             if (scenicRating > maxScenicRating)
             {
-                Console.WriteLine($"x:{x} y:{y} = {matrice[x, y]} = {scenicRating}");
                 maxScenicRating = scenicRating;
             }
         }
@@ -65,27 +68,43 @@ bool IsVisibleBottom(int x, int y) => GetVerticalSizes(x, y + 1, side - 1).All(g
 bool IsVisibleLeft(int x, int y) => GetHorizontalSizes(y, 0, x - 1).All(g => g < matrice[x, y]);
 bool IsVisibleRight(int x, int y) => GetHorizontalSizes(y, x + 1, side - 1).All(g => g < matrice[x, y]);
 
-int GetVisibleTreesTop(int x, int y) => GetVerticalSizes(x, y - 1, 0).TakeWhile(g => g <= matrice[x, y]).Count();
-int GetVisibleTreesBottom(int x, int y) => GetVerticalSizes(x, y + 1, side - 1).TakeWhile(g => g <= matrice[x, y]).Count();
-int GetVisibleTreesLeft(int x, int y) => GetVerticalSizes(y, x - 1, 0).TakeWhile(g => g <= matrice[x, y]).Count();
-int GetVisibleTreesRight(int x, int y) => GetVerticalSizes(y, x + 1, side - 1).TakeWhile(g => g <= matrice[x, y]).Count();
+int GetVisibleTreesTop(int x, int y) => BeEdgy(GetVerticalSizes(x, y - 1, 0), x, y);
+int GetVisibleTreesBottom(int x, int y) => BeEdgy(GetVerticalSizes(x, y + 1, side - 1), x, y);
+int GetVisibleTreesLeft(int x, int y) => BeEdgy(GetHorizontalSizes(y, x - 1, 0), x, y);
+int GetVisibleTreesRight(int x, int y) => BeEdgy(GetHorizontalSizes(y, x + 1, side - 1), x, y);
 
-IEnumerable<int> GetVerticalSizes(int x, int yLow, int yHigh) => GetSizes(x, yLow, yHigh, (x, y) => matrice[x, y]);
-IEnumerable<int> GetHorizontalSizes(int y, int xLow, int xHigh) => GetSizes(y, xLow, xHigh, (y, x) => matrice[x, y]);
-
-IEnumerable<int> GetSizes(int a1, int b1, int b2, Func<int, int, int> action)
+int BeEdgy(IEnumerable<int> treeSizes, int x, int y)
 {
-    var low = b1;
-    var high = b2;
-
-    if (b2 < b1)
+    var list = treeSizes.ToList();
+    var result = list.TakeWhile(g => g < matrice[x, y]).Count();
+    if (result < list.Count)
     {
-        low = b2;
-        high = b1;
+        result++;
     }
 
-    for (var a2 = low; a2 < high + 1; a2++)
+    return result;
+}
+
+IEnumerable<int> GetVerticalSizes(int x, int yStart, int yEnd)
+    => GetSizes(yStart, yEnd, y => matrice[x, y]);
+
+IEnumerable<int> GetHorizontalSizes(int y, int xStart, int xEnd)
+    => GetSizes(xStart, xEnd, x => matrice[x, y]);
+
+IEnumerable<int> GetSizes(int start, int end, Func<int, int> action)
+{
+    if (start > end)
     {
-        yield return action(a1, a2);
+        foreach (var i in Enumerable.Range(end, start - end + 1).Reverse())
+        {
+            yield return action(i);
+        }
+    }
+    else
+    {
+        foreach (var i in Enumerable.Range(start, end - start + 1))
+        {
+            yield return action(i);
+        }
     }
 }
