@@ -29,6 +29,7 @@ const string changeDirCommand = "$ cd ";
         case { }:
             ProcessFileSize(line);
             break;
+
         default:
             throw new NotImplementedException();
     };
