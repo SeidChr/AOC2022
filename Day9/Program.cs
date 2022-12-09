@@ -25,41 +25,49 @@ HashSet<(int, int)> set = new()
 
 "input.txt".Process((line, li) =>
 {
+    // Console.WriteLine(line);
     var distance = line[2..].ToIntI();
-    Lead(line[0], distance);
-    Follow();
+    for (var i = 0; i < distance; i++)
+    {
+        Step(line[0]);
+    }
 });
 
+Console.WriteLine(set.Count);
 
-void Lead(char direction, int distance)
+void Step(char direction)
 {
     switch (direction)
     {
         case 'U':
-            head = (head.x, head.y + distance);
+            if (tail.y < head.y)
+            {
+                tail = head;
+            }
+            head.y++;
             break;
         case 'D':
-            head = (head.x, head.y - distance);
+            if (tail.y > head.y)
+            {
+                tail = head;
+            }
+            head.y--;
             break;
         case 'R':
-            head = (head.x + distance, head.y);
+            if (tail.x < head.x)
+            {
+                tail = head;
+            }
+            head.x++;
             break;
         case 'L':
-            head = (head.x - distance, head.y);
+            if (tail.x > head.x)
+            {
+                tail = head;
+            }
+            head.x--;
             break;
     }
 
-}
-
-void Follow()
-{
-    (int x, int y) diff = (Math.Abs(head.x - tail.x), Math.Abs(head.y - tail.y));
-    switch (diff)
-    {
-        case { x: > 1 } and { y: > 1 }:
-            // diagonal
-            break;
-        default:
-            break;
-    }
+    _ = set.Add(tail);
 }
