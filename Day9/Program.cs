@@ -1,5 +1,7 @@
 ﻿using Common;
 
+using static Day9Helper;
+
 // TASK: count positions of the tail (including starting position)
 // Tail follows Head directly. it will always catch up to an adiacent tile.
 // one step is the maximum distance
@@ -15,59 +17,62 @@
 //         -2
 //          x
 
-(int x, int y) head = new(0, 0);
-(int x, int y) tail = new(0, 0);
+var rope = Enumerable.Range(0, 10).Select(_ => (0, 0)).ToArray();
 
-HashSet<(int, int)> set = new()
-{
-    tail
-};
+HashSet<(int x, int y)> positions = new() { rope[^1] };
 
 "input.txt".Process((line, li) =>
 {
+    Console.WriteLine(line);
+
+    var ropeLength = rope.Length;
+
     // Console.WriteLine(line);
     var distance = line[2..].ToIntI();
     for (var i = 0; i < distance; i++)
     {
-        Step(line[0]);
+        var p1Move = Move(rope[0], line[0]);
+        for (var j = 0; j < ropeLength; j++)
+        {
+            var p1 = rope[j];
+            rope[j] = p1Move;
+
+            if (j >= ropeLength - 1)
+            {
+                break;
+            }
+
+            var p2 = rope[j + 1];
+            var p2Move = Follow(p1, p1Move, p2);
+
+            if (p2 == p2Move)
+            {
+                // Console.WriteLine($"{j}: {p1}->{p1Move} --> {p2}->{p2Move} --|");
+                break;
+            }
+            else
+            {
+                // Console.WriteLine($"{j}: {p1}->{p1Move} --> {p2}->{p2Move}");
+                p1Move = p2Move;
+            }
+        }
+        // rope[^1] = p1Move;
+        _ = positions.Add(rope[^1]);
     }
 });
 
-Console.WriteLine(set.Count);
+Console.WriteLine(positions.Count);
 
-void Step(char direction)
-{
-    switch (direction)
-    {
-        case 'U':
-            if (tail.y < head.y)
-            {
-                tail = head;
-            }
-            head.y++;
-            break;
-        case 'D':
-            if (tail.y > head.y)
-            {
-                tail = head;
-            }
-            head.y--;
-            break;
-        case 'R':
-            if (tail.x < head.x)
-            {
-                tail = head;
-            }
-            head.x++;
-            break;
-        case 'L':
-            if (tail.x > head.x)
-            {
-                tail = head;
-            }
-            head.x--;
-            break;
-    }
 
-    _ = set.Add(tail);
-}
+// void SwingRope(int p1Index, (int x, int y) p1, (int x, int y) p1Move, (int x, int y) p2)
+// {
+//     if (p1Index == rope.Length - 2)
+//     var p2Move = Follow(p1, p1Move, p2);
+
+//     if (p2 == p2Move)
+//     {
+//         return;
+//     }
+
+//     SwingRope(p1Index + 1, p2, p2Move, rope[p1Index + 1]);
+// }
