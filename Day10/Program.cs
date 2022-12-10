@@ -35,32 +35,29 @@ void NoOp() => ConsumeCycle();
 
 void ConsumeCycle()
 {
+    Draw();
+
+    if ((cycle - 20) % 40 == 0)
+    {
+        sum += cycle * x;
+    }
+
+    cycle += 1;
+}
+
+void Draw()
+{
+    // draw a pixel
     var pixel = cycle - 1;
-
     pixel %= 40;
+    var pixelInRange = pixel >= x - 1 && pixel <= x + 1;
+    Console.Write(pixelInRange ? "#" : ".");
 
-    if (pixel >= x - 1 && pixel <= x + 1)
-    {
-        Console.Write("#");
-    }
-    else
-    {
-        Console.Write(".");
-    }
-
+    // make newline at end of line
     if (cycle % 40 == 0)
     {
         // 40 cycles per line
         // newline after cylce 40
         Console.WriteLine();
     }
-
-    if ((cycle - 20) % 40 == 0)
-    {
-        sum += cycle * x;
-        // Console.WriteLine($"Cycle {cycle}: x={x} adding={cycle * x} sum={sum}");
-    }
-
-    cycle += 1;
 }
-

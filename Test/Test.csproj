@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Day9\Day9.csproj" />
+    <ProjectReference Include="..\Day09\Day09.csproj" />
   </ItemGroup>
 
 </Project>
