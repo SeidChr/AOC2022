@@ -158,4 +158,12 @@ public static class Extensions
             action();
         }
     }
+
+    public static void Times(this int input, Action<int> action)
+    {
+        for (var i = 0; i < input; i++)
+        {
+            action(i);
+        }
+    }
 }
